@@ -6,3 +6,7 @@
 
 ### images ###
 *.png
+
+### other ###
+*.tgz
+*.zip
