@@ -223,7 +223,7 @@ if(it > 0) {
     D = computeDenom(in, out, p, 0.5*p0, 0.5*p1);
 }
     it++;
-    printf("%e\n", frob_dist(u, uold));
+    // printf("%e\n", frob_dist(u, uold));
 } while(it<MAXITER && frob_dist(u, uold) > THRESHOLD);
     
     printf("Iterations: %i\tMax iterations: %i\nFrobenius distance: %e\tThreshold: %e\n", it, MAXITER, frob_dist(u, uold), THRESHOLD);
