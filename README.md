@@ -1,6 +1,13 @@
 # image_inpainting
 Demonstrating the use of linearly stabilized schemes for image inpainting. 
 
+## Current state
+In the [figs](figs) folder are two figures, originally from the public domain, but now artificially "corrupted". These are just begging to be restored using image inpainting techniques. 
+
+In [tv](tv), we have so far files covering explicit and implicit solvers, solving the diffusion and TV based inpainting models.
+
+In [tvhneg](tvhneg), we have so far ... nothing.
+
 ## Plan 
 The first step is to present the use of linearly stabilized schemes on two PDE-based inpainting models.
 
