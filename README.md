@@ -12,6 +12,5 @@ and the other is the TV-H^{-1} (Bertozzi and Schoenlieb, 2011)
 
 $$ u_t = Delta div(grad(u) / abs(grad(u))) + lambda_{Omega\D}(u_0 - u). $$
 
-The techniques we use to evolve these models are the subject of my thesis
-https://github.com/kevstter/Thesis-B/blob/master/sfuthesis-2.1.1/template.pdf
+The techniques we use to evolve these models are the subject of [my thesis](https://github.com/kevstter/Thesis-B)
 
