@@ -159,7 +159,7 @@ if(it > 0) {
     u = tmpcpy;
 
 #pragma omp parallel for \
-	shared(u,v,w,absg,mask,image,l0,dt) \
+	shared(u1,v,w,absg,mask,image,l0,dt) \
 	private(c,i,j,chan)     
     for(c = 0; c < 3; c++) {
         chan = c*width*height;
@@ -202,9 +202,9 @@ if(it > 0) {
                 f1[chan+i*width+j] = (dxx((u+chan), i, j)*(w[chan+i*width+j]*w[chan+i*width+j]+ DPAD*DPAD) 
                 + dyy((u+chan), i, j)*(v[chan+i*width+j]*v[chan+i*width+j] + DPAD*DPAD) 
                 - 2*v[chan+i*width+j]*w[chan+i*width+j]*cdxy((u+chan), i, j)) / (absg[chan+i*width+j]*absg[chan+i*width+j]*absg[chan+i*width+j])
-                - 0.666666667*p1*(dxx((u+chan), i, j) + dyy((u+chan), i, j))
-                + 0.666666667*p0*l0*u[chan+i*width+j]
-                + l0*mask[chan+i*width+j]*(image[chan+i*width+j] - u[chan+i*width+j]);
+                - p1*(dxx((u+chan), i, j) + dyy((u+chan), i, j))
+                + 1.1*p0*l0*u[chan+i*width+j]
+                + 1.1*l0*mask[chan+i*width+j]*(image[chan+i*width+j] - u[chan+i*width+j]);
 
                 in[c][i*width+j] = u[chan+i*width+j] + dt*f1[chan+i*width+j];
             }
