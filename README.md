@@ -14,4 +14,4 @@ $$ u_t = Delta div(grad(u) / abs(grad(u))) + lambda_{Omega\D}(u_0 - u). $$
 
 The techniques we use to evolve these models are the subject of [my thesis](https://github.com/kevstter/Thesis-B)
 
-At some point down the road, it would be nice to look at the performance vs the direct energy minimization from a variational model as in [Getreuer](http://www.ipol.im/pub/art/2012/g-tvi/) and [Papafitsoros, Schoenlieb, and Sengul](http://www.ipol.im/pub/art/2013/40/), both of whom use the split Bregman algorithm to minimize the energy functional. 
+At some point down the road, it would be nice to look at the performance vs the direct energy minimization from a variational model as in [Getreuer](http://www.ipol.im/pub/art/2012/g-tvi/) and [Papafitsoros, Schoenlieb, and Sengul](http://www.ipol.im/pub/art/2013/40/), both of whom use the split Bregman algorithm to minimize an energy functional. 
