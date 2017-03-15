@@ -68,9 +68,9 @@ int main(int argc, char** argv) {
     set_mask(m, m);
 
     // Some parameters
-    dt = 0.12; 
+    dt = 0.16; 
     l0 = 100;
-    p0 = 0.525;
+    p0 = 0.50;
     p1 = 0.535/DPAD;
 
     // map rgb values to [0, 1]
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
 }
 float* sbdf1_tvh(const float* image, const float* mask) {
     int i, j, c;
-    float *u, *uold, *v, *w, *absg, *f, *tmpcpy;
+    float *u, *uold, *v, *w, *absg, *f, *tmpcpy, stall, change = 1.0;
 
     u       = (float*) xmalloc(sizeof(float)*width*height*3);
     uold    = (float*) xmalloc(sizeof(float)*width*height*3);
@@ -118,10 +118,12 @@ float* sbdf1_tvh(const float* image, const float* mask) {
     int it = 0;
     int chan;
 do {
+    stall = change;
     tmpcpy = uold;
     uold = u; 
     u = tmpcpy;    
 
+// first derivatives
 #pragma omp parallel for \
     shared(uold,v,w) \
     private(c,i,j,chan)
@@ -134,29 +136,18 @@ do {
             }
         }
     }
-    
+// curvature term
 #pragma omp parallel for \
-    shared(absg,v,w) \
+    shared(absg,v,w,uold) \
     private(c,i,j,chan)
     for(c = 0; c < 3; c++) {
         chan = c*width*height;
         for(i = 0; i < height; i++) {
             for(j = 0; j < width; j++) {
-                absg[chan+i*width+j] = sqrt(
-                    v[chan+i*width+j]*v[chan+i*width+j]
+                absg[chan+i*width+j] = sqrt(v[chan+i*width+j]*v[chan+i*width+j]
                 + w[chan+i*width+j]*w[chan+i*width+j]
                 + DPAD*DPAD);
-            }
-        }
-    }
-
-#pragma omp parallel for \
-    shared(uold,v,w,absg) \
-    private(c,i,j,chan)
-    for(c = 0; c < 3; c++) {
-        chan = c*width*height;
-        for(i = 0; i < height; i++) {
-            for(j = 0; j < width; j++) {
+                
                 f[chan+i*width+j] = (dxx(uold+chan, i, j)*(w[chan+i*width+j]*w[chan+i*width+j]+ DPAD*DPAD) 
                 + dyy(uold+chan, i, j)*(v[chan+i*width+j]*v[chan+i*width+j] + DPAD*DPAD) 
                 - 2*v[chan+i*width+j]*w[chan+i*width+j]*cdxy(uold+chan, i, j)) / (absg[chan+i*width+j]*absg[chan+i*width+j]*absg[chan+i*width+j]);
@@ -190,10 +181,15 @@ do {
         }
     }       
     it++;
-    // printf("%e\n", frob_dist(u, uold));
-} while(it<MAXITER && frob_dist(u, uold) > THRESHOLD);
+    change = frob_dist(u, uold);    
+    stall = fabs(stall-change)/THRESHOLD;
+    // printf("%.3e\t%.3e\n", change, stall);
+} while(it<MAXITER && change > THRESHOLD && stall > 2e-2);
     
-    printf("Iterations: %i\tMax iterations: %i\nFrobenius distance: %e\tThreshold: %e\n", it, MAXITER, frob_dist(u, uold), THRESHOLD);
+    if(stall < 2e-2) {
+        printf("Warning: Convergence stalled.\n");
+    }
+    printf("Iterations: %i\tMax iterations: %i\nFrobenius distance: %.2e\tThreshold: %.2e\n", it, MAXITER, frob_dist(u, uold), THRESHOLD);
 
     free(uold);
     free(v);
